@@ -1,0 +1,44 @@
+kind: "DeploymentConfig"
+apiVersion: "v1"
+metadata:
+  name: "heketi"
+spec:
+  template: 
+    metadata:
+      labels:
+        name: "heketi"
+    spec:
+      containers:
+        - name: "heketi"
+          image: "docker.io/joerisolie/heketi:5.0.0"
+          ports:
+            - name: "http"
+              containerPort: 8080
+              protocol: "TCP"
+          volumeMounts:
+            - name: heketi-config
+              mountPath: "/etc/heketi"
+              readOnly: True
+            - name: heketi-db
+              mountPath: "/var/lib/heketi"
+              readOnly: False
+            - name: pvc-heketi
+              mountPath: "/var/lib/heketi"
+      volumes:
+        - name: heketi-config
+          secret:
+            secretName: heketi-config
+        - name: heketi-db
+          secret:
+            secretName: heketi-db
+        - name: pvc-heketi
+          persistentVolumeClaim:
+            claimName: pvc-heketi
+  replicas: 1
+  triggers:
+    - type: "ConfigChange" 
+  strategy: 
+    type: "Rolling"
+  paused: false 
+  revisionHistoryLimit: 2 
+  minReadySeconds: 0 

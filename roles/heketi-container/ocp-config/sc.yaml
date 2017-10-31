@@ -1,0 +1,9 @@
+apiVersion: storage.k8s.io/v1beta1
+kind: StorageClass
+metadata:
+  name: heketi
+provisioner: kubernetes.io/glusterfs
+parameters:
+  resturl: "http://heketi-heketi.apps.nithralas.local"
+  restuser: "admin"
+  restuserkey: "admin_p@ssw0rd"

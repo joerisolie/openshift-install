@@ -9,11 +9,11 @@
   "jwt": {
     "_admin": "Admin has access to all APIs",
     "admin": {
-      "key": "key"
+      "key": "admin_p@ssw0rd"
     },
     "_user": "User only has access to /volumes endpoint",
     "user": {
-      "key": "key"
+      "key": "user_p@ssw0rd"
     }
   },
 
@@ -32,8 +32,8 @@
 
     "_sshexec_comment": "SSH username and private key file information",
     "sshexec": {
-      "keyfile": "/etc/heketi/heketi_key",
-      "user": "adminuser",
+      "keyfile": "/etc/heketi/key",
+      "user": "root",
       "port": "22",
       "fstab": "/etc/fstab"
     },
