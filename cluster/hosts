@@ -1,0 +1,49 @@
+# Create an OSEv3 group that contains the masters and nodes groups
+[OSEv3:children]
+masters
+nodes
+
+# Set variables common for all OSEv3 hosts
+[OSEv3:vars]
+# SSH user, this user should allow ssh based auth without requiring a password
+ansible_ssh_user=root
+
+# If ansible_ssh_user is not root, ansible_become must be set to true
+#ansible_become=true
+openshift_deployment_type=origin
+openshift_release="3.6"
+openshift_master_cluster_hostname=ocp-api.nithralas.local
+openshift_master_cluster_public_hostname=ocp-api.nithralas.local
+openshift_master_cluster_method=native
+
+openshift_clock_enabled=true
+
+os_sdn_network_plugin_name=redhat/openshift-ovs-multitenant
+
+# uncomment the following to enable htpasswd authentication; defaults to DenyAllPasswordIdentityProvider
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
+openshift_master_htpasswd_users={'nithralas': '$apr1$PY8Keg7y$/zxtUyUc5uNPrCTEe4t720'}
+openshift_master_default_subdomain=apps.nithralas.local
+
+openshift_disable_check=memory_availability,disk_availability,docker_storage
+
+# host group for masters
+[masters]
+ocp-master-1.nithralas.local containerized=true
+ocp-master-2.nithralas.local containerized=true
+ocp-master-3.nithralas.local containerized=true
+
+# host group for etcd
+[etcd]
+ocp-master-1.nithralas.local
+ocp-master-2.nithralas.local
+ocp-master-3.nithralas.local
+
+# host group for nodes, includes region info
+[nodes]
+ocp-master-1.nithralas.local openshift_schedulable=true openshift_node_labels="{'region': 'infra'}"
+ocp-master-2.nithralas.local openshift_schedulable=true openshift_node_labels="{'region': 'infra'}"
+ocp-master-3.nithralas.local openshift_schedulable=true openshift_node_labels="{'region': 'infra'}"
+ocp-node-1.nithralas.local openshift_node_labels="{'region': 'primary', 'zone': 'east'}"
+ocp-node-2.nithralas.local openshift_node_labels="{'region': 'primary', 'zone': 'east'}"
+ocp-node-3.nithralas.local openshift_node_labels="{'region': 'primary', 'zone': 'east'}"
