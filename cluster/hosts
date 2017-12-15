@@ -1,9 +1,8 @@
-# Create an OSEv3 group that contains the masters and nodes groups
 [OSEv3:children]
 masters
 nodes
 
-# Set variables common for all OSEv3 hosts
+###Configuration Variables#################################################
 [OSEv3:vars]
 #SSH user
 ansible_ssh_user=root
@@ -38,6 +37,27 @@ openshift_master_cluster_hostname=ocp-api.nithralas.local
 openshift_master_cluster_public_hostname=ocp-api.nithralas.local
 openshift_master_default_subdomain=apps.nithralas.local
 
+#Logging
+openshift_logging_install_logging: true
+openshift_logging_master_public_url: "https://ocp-api.nithralas.local:8443"
+openshift_logging_kibana_hostname: "kibana.apps.nithralas.local"
+openshift_logging_namespace: logging
+openshift_logging_fluentd_use_journal: true
+openshift_logging_use_mux: false
+openshift_logging_use_ops: false
+openshift_logging_es_ops_allow_cluster_reader: true
+openshift_logging_es_memory_limit: 2G
+
+#Metrics
+openshift_metrics_install_metrics: true
+openshift_metrics_hawkular_hostname: "hawkular.apps.nithralas.local"
+openshift_metrics_cassandra_replicas: 1
+openshift_metrics_cassandra_pvc_size: 5G
+openshift_metrics_cassandra_storage_type: pv
+openshift_metrics_cassanda_pvc_storage_class_name: ceph
+
+
+###Hosts#########################################
 # host group for masters
 [masters]
 ocp-master-1.nithralas.local containerized=true
