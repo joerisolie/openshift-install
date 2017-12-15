@@ -2,7 +2,6 @@
 [OSEv3:children]
 masters
 nodes
-glusterfs
 
 # Set variables common for all OSEv3 hosts
 [OSEv3:vars]
@@ -11,13 +10,16 @@ ansible_ssh_user=root
 
 # If ansible_ssh_user is not root, ansible_become must be set to true
 #ansible_become=true
+openshift_repos_enable_testing=true
+openshift_release="3.7"
+openshift_pkg_version="-3.7.0"
 
 openshift_deployment_type=origin
 openshift_master_cluster_hostname=master.nithralasmac.local
 openshift_master_cluster_public_hostname=master.nithralasmac.local
 
-openshift_storage_glusterfs_namespace=glusterfs 
-openshift_storage_glusterfs_name=storage
+#openshift_storage_glusterfs_namespace=glusterfs 
+#openshift_storage_glusterfs_name=storage
 
 #openshift_hosted_etcd_storage_kind=nfs
 #openshift_hosted_etcd_storage_nfs_options="*(rw,root_squash,sync,no_wdelay)"
@@ -42,6 +44,8 @@ os_sdn_network_plugin_name=redhat/openshift-ovs-networkpolicy
 
 # uncomment the following to enable htpasswd authentication; defaults to DenyAllPasswordIdentityProvider
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
+openshift_master_htpasswd_users={'nithralas': '$apr1$1wis1vW0$HgYnRqB8Gn7ZKek62qFv9/'}
+
 openshift_master_default_subdomain=openshiftpoc.local
 
 openshift_disable_check=memory_availability,disk_availability,docker_storage
@@ -60,8 +64,7 @@ master.nithralasmac.local openshift_schedulable=true openshift_node_labels="{'re
 node1.nithralasmac.local openshift_node_labels="{'region': 'primary', 'zone': 'east'}"
 node2.nithralasmac.local openshift_node_labels="{'region': 'primary', 'zone': 'west'}"
 
-[glusterfs]
-master.nithralasmac.local glusterfs_ip=172.16.100.50 glusterfs_devices='[ "/dev/sdc" ]'
-node1.nithralasmac.local glusterfs_ip=172.16.100.61 glusterfs_devices='[ "/dev/sdc" ]'
-node2.nithralasmac.local glusterfs_ip=172.16.100.62 glusterfs_devices='[ "/dev/sdc" ]'
-
+[ext_gluster]
+gluster1.nithralasmac.local
+gluster2.nithralasmac.local
+gluster3.nithralasmac.local
