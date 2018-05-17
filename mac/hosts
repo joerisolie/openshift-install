@@ -1,55 +1,62 @@
 # Create an OSEv3 group that contains the masters and nodes groups
 [OSEv3:children]
 masters
-nodes
 
 # Set variables common for all OSEv3 hosts
 [OSEv3:vars]
-# SSH user, this user should allow ssh based auth without requiring a password
+# SSH user
 ansible_ssh_user=root
 
-# If ansible_ssh_user is not root, ansible_become must be set to true
-#ansible_become=true
-openshift_repos_enable_testing=true
-openshift_release="3.7"
-openshift_pkg_version="-3.7.0"
-
+#Deployment configuration
 openshift_deployment_type=origin
-openshift_master_cluster_hostname=master.nithralasmac.local
-openshift_master_cluster_public_hostname=master.nithralasmac.local
-
-#openshift_storage_glusterfs_namespace=glusterfs 
-#openshift_storage_glusterfs_name=storage
-
-#openshift_hosted_etcd_storage_kind=nfs
-#openshift_hosted_etcd_storage_nfs_options="*(rw,root_squash,sync,no_wdelay)"
-#openshift_hosted_etcd_storage_nfs_directory=/opt/osev3-etcd 
-#openshift_hosted_etcd_storage_volume_name=etcd-vol2 
-#openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
-#openshift_hosted_etcd_storage_volume_size=1G
-#openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
-
-os_sdn_network_plugin_name=redhat/openshift-ovs-networkpolicy
-
-#openshift_hosted_metrics_deploy=true
-
-#openshift_hosted_logging_deploy=true
-
-#openshift_enable_service_catalog=true
-#openshift_service_catalog_image_prefix=openshift/origin-
-#openshift_service_catalog_image_version=latest
-#ansible_service_broker_image_prefix=openshift/
-#ansible_service_broker_registry_url="registry.access.redhat.com"
-#openshift_template_service_broker_namespaces=['openshift','myproject']
-
-# uncomment the following to enable htpasswd authentication; defaults to DenyAllPasswordIdentityProvider
-openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
-openshift_master_htpasswd_users={'nithralas': '$apr1$1wis1vW0$HgYnRqB8Gn7ZKek62qFv9/'}
-
-openshift_master_default_subdomain=openshiftpoc.local
-
+openshift_master_cluster_method=native
+openshift_repos_enable_testing=true
+openshift_release="3.9"
+openshift_clock_enabled=true
+containerized=false
 openshift_disable_check=memory_availability,disk_availability,docker_storage
 
+#HTPasswd id provider
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
+openshift_master_htpasswd_users={'joeri': '$apr1$PY8Keg7y$/zxtUyUc5uNPrCTEe4t720'}
+
+#Node Selectors
+osm_default_node_selector="region=infra"
+openshift_hosted_registry_selector="region=infra"
+openshift_hosted_router_selector="region=infra"
+
+#Telco settings
+os_sdn_network_plugin_name=redhat/openshift-ovs-networkpolicy
+osm_cluster_network_cidr=10.1.0.0/16
+openshift_portal_net=10.2.0.0/16
+openshift_master_external_ip_network_cidrs=['0.0.0.0/0']
+openshift_master_ingress_ip_network_cidrs=['0.0.0.0/0']
+
+#Ingress interfaces
+openshift_master_cluster_hostname=master.nithralasmac.local
+openshift_master_cluster_public_hostname=master.nithralasmac.local
+openshift_master_default_subdomain=apps.nithralasmac.local
+
+#Logging
+openshift_logging_install_logging=false
+openshift_logging_master_public_url="https://ocp-api.nithralasmac.local:8443"
+openshift_logging_kibana_hostname="kibana.apps.nithralasmac.local"
+openshift_logging_namespace=logging
+openshift_logging_fluentd_use_journal=true
+openshift_logging_use_mux=false
+openshift_logging_use_ops=false
+openshift_logging_es_ops_allow_cluster_reader=true
+openshift_logging_es_memory_limit=2G
+
+#Metrics
+openshift_metrics_install_metrics=false
+openshift_metrics_hawkular_hostname="hawkular.apps.nithralasmac.local"
+openshift_metrics_cassandra_replicas=1
+openshift_metrics_cassandra_pvc_size=5G
+openshift_metrics_cassandra_storage_type=pv
+openshift_metrics_cassanda_pvc_storage_class_name=ceph
+
+###Hosts#########################################
 # host group for masters
 [masters]
 master.nithralasmac.local
@@ -60,11 +67,4 @@ master.nithralasmac.local
 
 # host group for nodes, includes region info
 [nodes]
-master.nithralasmac.local openshift_schedulable=true openshift_node_labels="{'region': 'infra'}"
-node1.nithralasmac.local openshift_node_labels="{'region': 'primary', 'zone': 'east'}"
-node2.nithralasmac.local openshift_node_labels="{'region': 'primary', 'zone': 'west'}"
-
-[ext_gluster]
-gluster1.nithralasmac.local
-gluster2.nithralasmac.local
-gluster3.nithralasmac.local
+master.nithralasmac.local openshift_schedulable=true openshift_node_labels="{'region': 'infra', 'zone': 'east'}"
