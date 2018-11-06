@@ -11,7 +11,7 @@ ansible_ssh_user=root
 openshift_deployment_type=origin
 openshift_master_cluster_method=native
 openshift_repos_enable_testing=true
-openshift_release="3.9"
+openshift_release="3.10"
 openshift_clock_enabled=true
 containerized=false
 openshift_disable_check=memory_availability,disk_availability,docker_storage
@@ -21,9 +21,10 @@ openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 
 openshift_master_htpasswd_users={'joeri': '$apr1$PY8Keg7y$/zxtUyUc5uNPrCTEe4t720'}
 
 #Node Selectors
-osm_default_node_selector="region=infra"
-openshift_hosted_registry_selector="region=infra"
-openshift_hosted_router_selector="region=infra"
+osm_default_node_selector="node-role.kubernetes.io/compute=true"
+openshift_hosted_registry_selector="node-role.kubernetes.io/infra=true"
+openshift_hosted_router_selector="node-role.kubernetes.io/infra=true"
+template_service_broker_selector="node-role.kubernetes.io/infra=true"
 
 #Telco settings
 os_sdn_network_plugin_name=redhat/openshift-ovs-networkpolicy
@@ -36,6 +37,9 @@ openshift_master_ingress_ip_network_cidrs=['0.0.0.0/0']
 openshift_master_cluster_hostname=master.nithralasmac.local
 openshift_master_cluster_public_hostname=master.nithralasmac.local
 openshift_master_default_subdomain=apps.nithralasmac.local
+
+#ASB settings
+ansible_service_broker_local_registry_whitelist=['.*-apb$']
 
 #Logging
 openshift_logging_install_logging=false
@@ -67,4 +71,4 @@ master.nithralasmac.local
 
 # host group for nodes, includes region info
 [nodes]
-master.nithralasmac.local openshift_schedulable=true openshift_node_labels="{'region': 'infra', 'zone': 'east'}"
+master.nithralasmac.local openshift_node_group_name='node-config-all-in-one'
